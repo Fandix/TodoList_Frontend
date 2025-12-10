@@ -1,13 +1,41 @@
 import { mutation } from '../graphql';
 
-export const login = async (email, password) => {
+interface User {
+  id: string;
+  email: string;
+}
+
+interface SignInResponse {
+  signIn: {
+    user: User;
+    token: string;
+    errors?: string[];
+  };
+}
+
+interface SignOutResponse {
+  signOut: {
+    success: boolean;
+    errors?: string[];
+  };
+}
+
+interface SignUpResponse {
+  signUp: {
+    user: User;
+    token: string;
+    errors?: string[];
+  };
+}
+
+export const login = async (email: string, password: string): Promise<void> => {
   const LOGIN_MUTATION = `
     mutation SignIn ($email: String!, $password: String!) {
 	    signIn(email: $email, password: $password) {
 	      user { id email }
         token
         errors
-      } 
+      }
     }
   `;
 
@@ -17,7 +45,7 @@ export const login = async (email, password) => {
   };
 
   try {
-    const data = await mutation(LOGIN_MUTATION, variables);
+    const data = await mutation<SignInResponse>(LOGIN_MUTATION, variables);
     const signIn = data?.signIn;
     console.log(signIn)
 
@@ -30,7 +58,7 @@ export const login = async (email, password) => {
 };
 
 
-export const logout = async () => {
+export const logout = async (): Promise<void> => {
   const LOGOUT_MUTATION = `
     mutation {
 	    signOut {
@@ -40,7 +68,7 @@ export const logout = async () => {
     }
   `;
   try {
-    const data = await mutation(LOGOUT_MUTATION);
+    const data = await mutation<SignOutResponse>(LOGOUT_MUTATION);
     const signOut = data.signOut;
 
     if (signOut.errors?.length) throw new Error(signOut.errors[0]);
@@ -55,7 +83,7 @@ export const logout = async () => {
 };
 
 
-export const register = async (email, password, passwordConfirmation) => {
+export const register = async (email: string, password: string, passwordConfirmation: string): Promise<void> => {
   const REGISTER_MUTATION = `
     mutation SignUp($email: String!, $password: String!, $passwordConfirmation: String!) {
 	    signUp(email: $email, password: $password, passwordConfirmation: $passwordConfirmation) {
@@ -73,7 +101,7 @@ export const register = async (email, password, passwordConfirmation) => {
   };
 
   try {
-    const data = await mutation(REGISTER_MUTATION, variables);
+    const data = await mutation<SignUpResponse>(REGISTER_MUTATION, variables);
     const signUp = data?.signUp;
 
     if (signUp.errors?.length) throw new Error(signUp.errors[0]);

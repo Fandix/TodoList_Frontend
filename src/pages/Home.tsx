@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../services/auth/authService';
 
 function Home() {
   const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const handleLogout = async () => {
     setErrorMessage('');
@@ -13,9 +13,9 @@ function Home() {
       navigate('/');
     } catch (error) {
       console.error(error);
-      setErrorMessage(error);
+      setErrorMessage((error as Error).message || 'Logout failed');
     }
-    
+
   };
 
   return (
@@ -66,7 +66,7 @@ function Home() {
           {errorMessage}
         </div>
       )}
-    </div>    
+    </div>
   );
 }
 

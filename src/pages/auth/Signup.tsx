@@ -1,25 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Signup.css';
 import signupImage from '../../assets/signup_image.webp';
 import { register } from '../../services/auth/authService';
 
 function Signup() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const navigate = useNavigate();
   const location = useLocation();
   const MIN_PASSWORD_LENGTH = 6;
 
   useEffect(() => {
-    if (!location.state || !location.state.fromLogin) {
+    if (!location.state || !(location.state as any).fromLogin) {
       navigate('/', { replace: true });
     }
   }, [location, navigate]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMessage('');
 
@@ -36,7 +36,7 @@ function Signup() {
       await register(email, password, confirmPassword);
       navigate('/home');
     } catch (error) {
-      setErrorMessage(error.message);
+      setErrorMessage((error as Error).message);
     }
 
     // navigate('/home');
