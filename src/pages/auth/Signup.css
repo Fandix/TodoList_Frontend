@@ -1,16 +1,14 @@
-/* 註冊頁面容器 */
 .signup-container {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
+  background: linear-gradient(90deg, #f5d190 0%, #d4b887 100%);
   padding: 20px;
   position: relative;
   overflow: hidden;
 }
 
-/* 背景裝飾圖案 */
 .signup-container::before {
   content: '';
   position: absolute;
@@ -23,7 +21,6 @@
   pointer-events: none;
 }
 
-/* 註冊卡片 */
 .signup-card {
   background: white;
   border-radius: 20px;
@@ -35,7 +32,6 @@
   z-index: 1;
 }
 
-/* 表單包裝器 */
 .signup-form-wrapper {
   padding: 50px 40px;
   width: 100%;
@@ -49,7 +45,6 @@
   margin-bottom: 30px;
 }
 
-/* 輸入框樣式 */
 .input-group-text {
   border: 1px solid #dee2e6;
   border-right: none;
@@ -75,7 +70,6 @@
   border-color: #86b7fe;
 }
 
-/* 註冊按鈕 */
 .btn-signup {
   background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
   border: none;
@@ -94,7 +88,6 @@
   box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
 }
 
-/* 返回登入文字 */
 .back-to-login-text {
   color: #666;
   font-size: 14px;
@@ -116,7 +109,6 @@
   text-decoration: underline;
 }
 
-/* 右側插圖區域 */
 .illustration-wrapper {
   padding: 40px;
   display: flex;
@@ -129,25 +121,4 @@
   height: auto;
   max-height: 400px;
   object-fit: contain;
-}
-
-/* 響應式設計 */
-@media (max-width: 768px) {
-  .signup-form-wrapper {
-    padding: 40px 30px;
-  }
-
-  .signup-title {
-    font-size: 28px;
-  }
-}
-
-@media (max-width: 576px) {
-  .signup-form-wrapper {
-    padding: 30px 20px;
-  }
-
-  .signup-title {
-    font-size: 24px;
-  }
 }

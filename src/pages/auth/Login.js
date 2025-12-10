@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
-import todoListImage from '../../assets/todoList_image.png';
+import LoginImage from '../../assets/login_image.avif';
 import { login } from '../../services/auth/authService';
 
 function Login() {
@@ -93,7 +93,7 @@ function Login() {
 
           <div className="col-md-6 d-none d-md-flex align-items-center justify-content-center">
             <div className="illustration-wrapper">
-              <img src={todoListImage} alt="Todo List" className="illustration-image" />
+              <img src={LoginImage} alt="Todo List" className="illustration-image" />
             </div>
           </div>
         </div>
