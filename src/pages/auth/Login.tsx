@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import LoginImage from '../../assets/login_image.avif';
 import { login } from '../../services/auth/authService';
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMessage('');
 
@@ -18,11 +18,11 @@ function Login() {
       await login(email, password);
       navigate('/home');
     } catch (error) {
-      setErrorMessage(error.message);
+      setErrorMessage((error as Error).message);
     }
   };
 
-  const handleCreateAccount = (e) => {
+  const handleCreateAccount = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     navigate('/signup', { state: { fromLogin: true } });
   };

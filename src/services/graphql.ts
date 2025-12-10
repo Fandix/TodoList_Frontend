@@ -2,7 +2,20 @@
 const GRAPHQL_ENDPOINT =
   process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:3000/graphql';
 
-export const graphqlRequest = async (query, variables = {}, options = {}) => {
+interface GraphQLResponse<T = any> {
+  data?: T;
+  errors?: Array<{ message: string }>;
+}
+
+interface GraphQLRequestOptions {
+  headers?: Record<string, string>;
+}
+
+export const graphqlRequest = async <T = any>(
+  query: string,
+  variables: Record<string, any> = {},
+  options: GraphQLRequestOptions = {}
+): Promise<T> => {
   try {
     const token = localStorage.getItem('token');
 
@@ -19,14 +32,14 @@ export const graphqlRequest = async (query, variables = {}, options = {}) => {
       }),
     });
 
-    const result = await response.json();
+    const result: GraphQLResponse<T> = await response.json();
 
     if (result.errors) {
       console.error('GraphQL Errors:', result.errors);
       throw new Error(result.errors[0]?.message);
     }
 
-    return result.data;
+    return result.data as T;
   } catch (error) {
     console.error('GraphQL Request Error:', error);
     throw error;
@@ -34,16 +47,18 @@ export const graphqlRequest = async (query, variables = {}, options = {}) => {
 };
 
 
-export const query = (query, variables) => {
-  return graphqlRequest(query, variables);
+export const query = <T = any>(query: string, variables?: Record<string, any>): Promise<T> => {
+  return graphqlRequest<T>(query, variables);
 };
 
-export const mutation = (mutation, variables) => {
-  return graphqlRequest(mutation, variables);
+export const mutation = <T = any>(mutation: string, variables?: Record<string, any>): Promise<T> => {
+  return graphqlRequest<T>(mutation, variables);
 };
 
-export default {
+const graphqlClient = {
   query,
   mutation,
   graphqlRequest,
 };
+
+export default graphqlClient;
