@@ -1,12 +1,22 @@
 import { SortOrder } from './common_model';
 
-enum TaskCategories {
+export enum TaskCategories {
     work = 'work',
     personal = 'personal',
     shopping = 'shopping',
     health = 'health',
     other = 'other'
 }
+
+export enum TaskPriority {
+    low = 1,
+    medium = 2,
+    high = 3
+}
+
+export type CategoryFilter = 'all' | TaskCategories;
+export type PriorityFilter = 'all' | TaskPriority;
+export type CompletionFilter = 'all' | 'completed' | 'uncompleted';
 
 enum TaskSortBy {
     created_at = 'CREATED_AT',
@@ -18,23 +28,24 @@ enum TaskSortBy {
 
 
 export interface TaskInput {
-    completed: boolean;
-    category: TaskCategories;
-    search: string;
-    sortBy: TaskSortBy;
-    sortOrder: SortOrder;
-    limit: number;
-    offset: number;
+    completed?: boolean;
+    category?: TaskCategories;
+    priority?: TaskPriority;
+    search?: string;
+    sortBy?: TaskSortBy;
+    sortOrder?: SortOrder;
+    limit?: number;
+    offset?: number;
 }
 
 export interface TaskResponse {
-    id: number;
+    id: string;
     title: string;
-    priority: string;
+    priority: number;
     completed: boolean;
     category: string;
     description: string;
-    dueDay: string;
+    dueDate: string;
 }
 
 export interface TasksResponse {

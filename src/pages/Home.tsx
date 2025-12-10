@@ -1,10 +1,38 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../services/auth/authService';
+import Sidebar from '../components/Sidebar';
+import TaskList from '../components/TaskList';
+import useTasks from './useTasks';
+import './Home.css';
 
 function Home() {
   const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const {
+    tasks,
+    loading,
+    errorMessage,
+    setErrorMessage,
+    searchQuery,
+    setSearchQuery,
+    handleSearchSubmit,
+    completionFilter,
+    handleCompletionChange,
+    activeCategory,
+    handleCategoryChange,
+    priorityFilter,
+    handlePriorityChange,
+    currentPage,
+    handleNextPage,
+    handlePrevPage,
+    canGoNext,
+    canGoPrev,
+  } = useTasks();
+
+  const getFilterTitle = () => {
+    if (completionFilter === 'completed') return 'Completed';
+    if (completionFilter === 'uncompleted') return 'Uncompleted';
+    return 'All Tasks';
+  };
 
   const handleLogout = async () => {
     setErrorMessage('');
@@ -15,57 +43,56 @@ function Home() {
       console.error(error);
       setErrorMessage((error as Error).message || 'Logout failed');
     }
+  };
 
+  const handleTaskClick = (task_id: string) => {
+    console.log('Task clicked:', task_id);
+  };
+
+  const handleTaskCompleteClick = (task_id: string) => {
+    console.log('Task completed clicked', task_id);
+  }
+
+  const handleAddTask = () => {
+    console.log('Add task clicked');
   };
 
   return (
-    <div style={{
-      padding: '20px',
-      maxWidth: '1200px',
-      margin: '0 auto'
-    }}>
-      <header style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '30px',
-        paddingBottom: '20px',
-        borderBottom: '1px solid #ddd'
-      }}>
-        <h1>首頁</h1>
-        <button
-          onClick={handleLogout}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: '#f44336',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '14px'
-          }}
-        >
-          登出
-        </button>
-      </header>
+    <div className="home-container">
+      <Sidebar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        onSearchSubmit={handleSearchSubmit}
+        completionFilter={completionFilter}
+        onCompletionChange={handleCompletionChange}
+        activeCategory={activeCategory}
+        onCategoryChange={handleCategoryChange}
+        priorityFilter={priorityFilter}
+        onPriorityChange={handlePriorityChange}
+        onLogout={handleLogout}
+      />
 
-      <div style={{
-        backgroundColor: 'white',
-        padding: '30px',
-        borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-      }}>
-        <h2>歡迎來到 Todo List 應用</h2>
-        <p style={{ color: '#666', marginTop: '10px' }}>
-          這是您的首頁，您可以在這裡管理您的待辦事項。
-        </p>
-      </div>
+      <main className="main-content">
+        {errorMessage && (
+          <div className="error-message">
+            <i className="bi bi-exclamation-circle"></i> {errorMessage}
+          </div>
+        )}
 
-      {errorMessage && (
-        <div className="alert alert-danger" role="alert">
-          {errorMessage}
-        </div>
-      )}
+        <TaskList
+          tasks={tasks}
+          loading={loading}
+          title={getFilterTitle()}
+          onTaskClick={handleTaskClick}
+          onTaskCompleteClick={handleTaskCompleteClick}
+          onAddTask={handleAddTask}
+          currentPage={currentPage}
+          onNextPage={handleNextPage}
+          onPrevPage={handlePrevPage}
+          canGoNext={canGoNext}
+          canGoPrev={canGoPrev}
+        />
+      </main>
     </div>
   );
 }

@@ -11,14 +11,13 @@ export const get_tasks = async (input: TaskInput): Promise<TasksResponse> => {
                 priority
                 completed
                 category
-                description
                 dueDate
             }
         } 
     `;
 
     try {
-        const data = await query(TASKS_QUERY, input);
+        const data = await query(TASKS_QUERY, { input });
         return { list: data?.missions }
     } catch (error) {
         console.error('Fetch Tasks failed:', error);
