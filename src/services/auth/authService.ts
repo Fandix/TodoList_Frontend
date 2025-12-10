@@ -1,32 +1,5 @@
 import { mutation } from '../graphql';
-
-interface User {
-  id: string;
-  email: string;
-}
-
-interface SignInResponse {
-  signIn: {
-    user: User;
-    token: string;
-    errors?: string[];
-  };
-}
-
-interface SignOutResponse {
-  signOut: {
-    success: boolean;
-    errors?: string[];
-  };
-}
-
-interface SignUpResponse {
-  signUp: {
-    user: User;
-    token: string;
-    errors?: string[];
-  };
-}
+import { SignInResponse, SignOutResponse, SignUpResponse } from '../../model/auth_model';
 
 export const login = async (email: string, password: string): Promise<void> => {
   const LOGIN_MUTATION = `
@@ -47,7 +20,6 @@ export const login = async (email: string, password: string): Promise<void> => {
   try {
     const data = await mutation<SignInResponse>(LOGIN_MUTATION, variables);
     const signIn = data?.signIn;
-    console.log(signIn)
 
     if (signIn.errors?.length) throw new Error(signIn.errors[0]);
     if (signIn.token) localStorage.setItem('token', signIn.token);
