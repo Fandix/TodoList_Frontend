@@ -1,40 +1,24 @@
 import { TaskResponse } from '../../model/task_model';
+import { formatDate, getPriorityMeta, capitalize } from '../../utils';
 import './TaskItem.css';
 
 interface TaskItemProps {
   task: TaskResponse;
-  onClick?: (id: string) => void;
-  onCompletedClick?: (id: string) => void;
+  onClick?: (task: TaskResponse) => void;
+  onCompletedClick?: (task: TaskResponse) => void;
 }
 
 function TaskItem({ task, onClick, onCompletedClick }: TaskItemProps) {
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { year: '2-digit', month: '2-digit', day: '2-digit' });
-  };
-
-  const getPriorityMeta = () => {
-    switch (task.priority) {
-      case 1:
-        return { label: 'Low', className: 'low' };
-      case 2:
-        return { label: 'Medium', className: 'medium' };
-      default:
-        return { label: 'High', className: 'high' };
-    }
-  };
-
-  const priorityMeta = getPriorityMeta();
+  const priorityMeta = getPriorityMeta(task.priority);
 
   return (
-    <div className={`task-item ${task.completed ? 'completed' : ''}`} onClick={() => onClick?.(task.id)}>
+    <div className={`task-item ${task.completed ? 'completed' : ''}`} onClick={() => onClick?.(task)}>
       <div className="task-item-left">
         <div
           className={`task-checkbox ${task.completed ? 'checked' : ''}`}
           onClick={(e) => {
             e.stopPropagation();
-            onCompletedClick?.(task.id);
+            onCompletedClick?.(task);
           }}
         >
           {task.completed && <i className="bi bi-check"></i>}
@@ -51,7 +35,7 @@ function TaskItem({ task, onClick, onCompletedClick }: TaskItemProps) {
           )}
           {task.category && (
             <span className={`task-category-tag ${task.category}`}>
-              {task.category.charAt(0).toUpperCase() + task.category.slice(1)}
+              {capitalize(task.category)}
             </span>
           )}
           {priorityMeta && (

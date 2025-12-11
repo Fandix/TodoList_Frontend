@@ -1,12 +1,18 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../services/auth/authService';
 import Sidebar from '../components/Sidebar';
 import TaskList from '../components/TaskList';
-import useTasks from './useTasks';
+import TaskModal, { TaskFormData } from '../components/TaskModal';
+import useTasks from '../usecases/useTasks';
 import './Home.css';
+import { CreateTaskInput, TaskResponse, UpdateTaskInput } from '../model/task_model';
 
 function Home() {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<TaskResponse | null>(null);
+
   const {
     tasks,
     loading,
@@ -17,6 +23,10 @@ function Home() {
     handleSearchSubmit,
     completionFilter,
     handleCompletionChange,
+    handleTaskCompleteClick,
+    handleCreateTask,
+    handleUpdateTask,
+    handleDeleteTask,
     activeCategory,
     handleCategoryChange,
     priorityFilter,
@@ -45,16 +55,53 @@ function Home() {
     }
   };
 
-  const handleTaskClick = (task_id: string) => {
-    console.log('Task clicked:', task_id);
+  const handleTaskClick = (task: TaskResponse) => {
+    setSelectedTask(task);
+    setIsModalOpen(true);
   };
 
-  const handleTaskCompleteClick = (task_id: string) => {
-    console.log('Task completed clicked', task_id);
-  }
-
   const handleAddTask = () => {
-    console.log('Add task clicked');
+    setSelectedTask(null);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedTask(null);
+  };
+
+  const handleSaveTask = async (taskData: TaskFormData) => {
+    const dueDateISO = taskData.dueDate
+      ? new Date(taskData.dueDate + 'T00:00:00Z').toISOString()
+      : null;
+
+    const baseParams = {
+      title: taskData.title,
+      description: taskData.description,
+      category: taskData.category,
+      priority: taskData.priority,
+      ...(dueDateISO && { dueDate: dueDateISO }),
+    };
+
+    try {
+      if (selectedTask) {
+        await handleUpdateTask({ id: selectedTask.id, ...baseParams });
+      } else {
+        await handleCreateTask(baseParams);
+      }
+      handleCloseModal();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDelete = async (taskId: string) => {
+    try {
+      await handleDeleteTask(taskId);
+      handleCloseModal();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -73,12 +120,6 @@ function Home() {
       />
 
       <main className="main-content">
-        {errorMessage && (
-          <div className="error-message">
-            <i className="bi bi-exclamation-circle"></i> {errorMessage}
-          </div>
-        )}
-
         <TaskList
           tasks={tasks}
           loading={loading}
@@ -93,6 +134,14 @@ function Home() {
           canGoPrev={canGoPrev}
         />
       </main>
+
+      <TaskModal
+        isOpen={isModalOpen}
+        task={selectedTask}
+        onClose={handleCloseModal}
+        onSave={handleSaveTask}
+        onDelete={handleDelete}
+      />
     </div>
   );
 }

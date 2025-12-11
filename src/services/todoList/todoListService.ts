@@ -1,23 +1,16 @@
 import { mutation, query } from '../graphql';
-import { TaskInput, TaskResponse, TasksResponse } from '../../model/task_model';
+import { QueryTaskInput, CreateTaskInput, UpdateTaskInput, TaskResponse, TasksResponse } from '../../model/task_model';
+import {
+  GET_TASKS_QUERY,
+  GET_TASK_QUERY,
+  CREATE_TASK_MUTATION,
+  UPDATE_TASK_MUTATION,
+  DELETE_TASK_MUTATION
+} from '../../graphql';
 
-
-export const get_tasks = async (input: TaskInput): Promise<TasksResponse> => {
-    const TASKS_QUERY = `
-        query Missions($input: MissionsQueryInput) {
-            missions(input: $input) {
-                id
-                title
-                priority
-                completed
-                category
-                dueDate
-            }
-        } 
-    `;
-
+export const getTasks = async (input: QueryTaskInput): Promise<TasksResponse> => {
     try {
-        const data = await query(TASKS_QUERY, { input });
+        const data = await query(GET_TASKS_QUERY, { input });
         return { list: data?.missions }
     } catch (error) {
         console.error('Fetch Tasks failed:', error);
@@ -25,26 +18,45 @@ export const get_tasks = async (input: TaskInput): Promise<TasksResponse> => {
     }
 }
 
-export const get_task = async (id: number): Promise<TaskResponse> => {
-    const TASK_QUERY = `
-        query Mission($id: ID!) {
-            mission(id: $id) {
-                id
-                title
-                description
-                completed
-                dueDate
-                priority
-                category
-            }
-        }
-    `;
-
+export const getTask = async (input: { id: number }): Promise<TaskResponse> => {
     try {
-        const data = await query<{ mission: TaskResponse }>(TASK_QUERY, { id });
+        const data = await query<{ mission: TaskResponse }>(GET_TASK_QUERY, input);
         return data.mission;
     } catch (error) {
         console.error('Fetch Task failed:', error);
+        throw error;
+    }
+}
+
+export const createTask = async (input: CreateTaskInput): Promise<TaskResponse> => {
+    try {
+        const data = await mutation(CREATE_TASK_MUTATION, { input });
+        if (data.errors?.length) throw new Error(data.errors[0]);
+        return data.mission;
+    } catch (error) {
+        console.error('Create Task failed:', error);
+        throw error;
+    }
+}
+
+export const updateTask = async (input: UpdateTaskInput): Promise<TaskResponse> => {
+    try {
+        const data = await mutation(UPDATE_TASK_MUTATION, { input });
+        if (data.errors?.length) throw new Error(data.errors[0]);
+        return data.mission;
+    } catch (error) {
+        console.error('Update Task failed:', error);
+        throw error;
+    }
+}
+
+export const deleteTask = async (input: { id: string }): Promise<void> => {
+    try {
+        const data = await mutation(DELETE_TASK_MUTATION, input);
+        if (data.errors?.length) throw new Error(data.errors[0]);
+        return;
+    } catch (error) {
+        console.error('Delete Task failed:', error);
         throw error;
     }
 }

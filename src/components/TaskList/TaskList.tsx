@@ -7,8 +7,8 @@ interface TaskListProps {
   tasks: TaskResponse[];
   loading: boolean;
   title: string;
-  onTaskClick?: (task_id: string) => void;
-  onTaskCompleteClick?: (task_id: string) => void;
+  onTaskClick?: (task: TaskResponse) => void;
+  onTaskCompleteClick?: (task: TaskResponse) => void;
   onAddTask?: () => void;
   currentPage?: number;
   onNextPage?: () => void;

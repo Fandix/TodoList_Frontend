@@ -1,6 +1,6 @@
-// Prefer env variable; fall back to local dev endpoint to avoid undefined fetch target
-const GRAPHQL_ENDPOINT =
-  process.env.REACT_APP_GRAPHQL_ENDPOINT || 'http://localhost:3000/graphql';
+import { API_CONFIG, STORAGE_KEYS } from '../constants';
+
+const GRAPHQL_ENDPOINT = API_CONFIG.GRAPHQL_ENDPOINT;
 
 interface GraphQLResponse<T = any> {
   data?: T;
@@ -17,7 +17,7 @@ export const graphqlRequest = async <T = any>(
   options: GraphQLRequestOptions = {}
 ): Promise<T> => {
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
 
     const response = await fetch(GRAPHQL_ENDPOINT, {
       method: 'POST',

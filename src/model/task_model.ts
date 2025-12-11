@@ -27,7 +27,7 @@ enum TaskSortBy {
 }
 
 
-export interface TaskInput {
+export interface QueryTaskInput {
     completed?: boolean;
     category?: TaskCategories;
     priority?: TaskPriority;
@@ -36,6 +36,24 @@ export interface TaskInput {
     sortOrder?: SortOrder;
     limit?: number;
     offset?: number;
+}
+
+export interface CreateTaskInput {
+    title: string;
+    priority: number;
+    category: string;
+    description?: string;
+    dueDate?: string;
+}
+
+export interface UpdateTaskInput {
+    id: string;
+    title?: string;
+    priority?: number;
+    category?: string;
+    completed?: boolean;
+    description?: string;
+    dueDate?: string;
 }
 
 export interface TaskResponse {
