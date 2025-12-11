@@ -14,7 +14,7 @@ import { TASKS_PER_PAGE } from '../constants';
 
 const TASKS_LIMIT = TASKS_PER_PAGE;
 
-function useTasks() {
+export const useTasks = () => {
   const [tasks, setTasks] = useState<TaskResponse[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -182,6 +182,4 @@ function useTasks() {
     canGoPrev,
     refreshTasks: fetchTasks,
   };
-}
-
-export default useTasks;
+};

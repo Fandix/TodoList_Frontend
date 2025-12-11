@@ -1,6 +1,4 @@
 import {
-  TaskCategories,
-  TaskPriority,
   CategoryFilter,
   PriorityFilter,
   CompletionFilter,

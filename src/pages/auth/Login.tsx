@@ -1,24 +1,24 @@
-import React, { useState, FormEvent } from 'react';
+import React, { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import FormInput from '../../components/common/FormInput';
+import { useAuth, useForm } from '../../hooks';
 import './Login.css';
 import LoginImage from '../../assets/login_image.avif';
-import { login } from '../../services/auth/authService';
 
 function Login() {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [errorMessage, setErrorMessage] = useState<string>('');
   const navigate = useNavigate();
+  const { login, loading, error } = useAuth();
+  const { values, handleChange } = useForm({
+    email: '',
+    password: '',
+  });
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setErrorMessage('');
-
     try {
-      await login(email, password);
-      navigate('/home');
+      await login(values.email, values.password);
     } catch (error) {
-      setErrorMessage((error as Error).message);
+      console.error(error);
     }
   };
 
@@ -36,45 +36,35 @@ function Login() {
               <h2 className="login-title mb-4">Sign In</h2>
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                  <div className="input-group">
-                    <span className="input-group-text bg-white">
-                      <i className="bi bi-person"></i>
-                    </span>
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Enter Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
+                  <FormInput
+                    type="email"
+                    placeholder="Enter Email"
+                    value={values.email}
+                    onChange={handleChange('email')}
+                    icon="bi bi-person"
+                    required
+                  />
                 </div>
 
                 <div className="mb-3">
-                  <div className="input-group">
-                    <span className="input-group-text bg-white">
-                      <i className="bi bi-lock"></i>
-                    </span>
-                    <input
-                      type="password"
-                      className="form-control"
-                      placeholder="Enter Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </div>
+                  <FormInput
+                    type="password"
+                    placeholder="Enter Password"
+                    value={values.password}
+                    onChange={handleChange('password')}
+                    icon="bi bi-lock"
+                    required
+                  />
                 </div>
 
-                {errorMessage && (
+                {error && (
                   <div className="alert alert-danger" role="alert">
-                    {errorMessage}
+                    {error}
                   </div>
                 )}
 
-                <button type="submit" className="btn btn-login w-auto px-4 mb-4">
-                  Login
+                <button type="submit" className="btn btn-login w-auto px-4 mb-4" disabled={loading}>
+                  {loading ? 'Logging in...' : 'Login'}
                 </button>
 
                 <p className="create-account-text">

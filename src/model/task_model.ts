@@ -59,13 +59,13 @@ export interface UpdateTaskInput {
 export interface TaskResponse {
     id: string;
     title: string;
-    priority: number;
+    priority: TaskPriority;
     completed: boolean;
-    category: string;
-    description: string;
-    dueDate: string;
+    category: TaskCategories;
+    description?: string;
+    dueDate?: string;
 }
 
 export interface TasksResponse {
-    list: [TaskResponse]
+    list: TaskResponse[]
 }

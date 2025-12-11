@@ -8,8 +8,8 @@ export const login = async (email: string, password: string): Promise<void> => {
     const data = await mutation<SignInResponse>(SIGN_IN_MUTATION, { email, password });
     const signIn = data?.signIn;
 
-    if (signIn.errors?.length) throw new Error(signIn.errors[0]);
-    if (signIn.token) localStorage.setItem(STORAGE_KEYS.TOKEN, signIn.token);
+    if (signIn?.errors?.length) throw new Error(signIn.errors[0]);
+    if (signIn?.token) localStorage.setItem(STORAGE_KEYS.TOKEN, signIn.token);
   } catch (error) {
     console.error('Login failed:', error);
     throw error;
@@ -20,10 +20,10 @@ export const login = async (email: string, password: string): Promise<void> => {
 export const logout = async (): Promise<void> => {
   try {
     const data = await mutation<SignOutResponse>(SIGN_OUT_MUTATION);
-    const signOut = data.signOut;
+    const signOut = data?.signOut;
 
-    if (signOut.errors?.length) throw new Error(signOut.errors[0]);
-    if (signOut.success) {
+    if (signOut?.errors?.length) throw new Error(signOut.errors[0]);
+    if (signOut?.success) {
       localStorage.removeItem(STORAGE_KEYS.TOKEN);
       localStorage.removeItem(STORAGE_KEYS.USER);
     }
@@ -43,8 +43,8 @@ export const register = async (email: string, password: string, passwordConfirma
     });
     const signUp = data?.signUp;
 
-    if (signUp.errors?.length) throw new Error(signUp.errors[0]);
-    if (signUp.token) localStorage.setItem(STORAGE_KEYS.TOKEN, signUp.token);
+    if (signUp?.errors?.length) throw new Error(signUp.errors[0]);
+    if (signUp?.token) localStorage.setItem(STORAGE_KEYS.TOKEN, signUp.token);
   } catch (error) {
     console.error('signup failed:', error);
     throw error;

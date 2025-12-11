@@ -1,23 +1,19 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { logout } from '../services/auth/authService';
 import Sidebar from '../components/Sidebar';
 import TaskList from '../components/TaskList';
 import TaskModal, { TaskFormData } from '../components/TaskModal';
-import useTasks from '../usecases/useTasks';
+import { useAuth, useTasks } from '../hooks';
 import './Home.css';
-import { CreateTaskInput, TaskResponse, UpdateTaskInput } from '../model/task_model';
+import { TaskResponse } from '../model/task_model';
 
 function Home() {
-  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<TaskResponse | null>(null);
 
   const {
     tasks,
     loading,
-    errorMessage,
-    setErrorMessage,
     searchQuery,
     setSearchQuery,
     handleSearchSubmit,
@@ -45,13 +41,10 @@ function Home() {
   };
 
   const handleLogout = async () => {
-    setErrorMessage('');
     try {
       await logout();
-      navigate('/');
     } catch (error) {
       console.error(error);
-      setErrorMessage((error as Error).message || 'Logout failed');
     }
   };
 

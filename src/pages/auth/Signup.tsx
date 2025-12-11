@@ -1,50 +1,62 @@
-import { useState, useEffect, FormEvent } from 'react';
+import { useEffect, FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import FormInput from '../../components/common/FormInput';
+import { useAuth, useForm } from '../../hooks';
+import { LoginLocationState } from '../../types/navigation';
+import { MIN_PASSWORD_LENGTH } from '../../constants';
 import './Signup.css';
 import signupImage from '../../assets/signup_image.webp';
-import { register } from '../../services/auth/authService';
 
 function Signup() {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [errorMessage, setErrorMessage] = useState<string>('');
   const navigate = useNavigate();
   const location = useLocation();
-  const MIN_PASSWORD_LENGTH = 6;
+  const { register, loading, error, clearError } = useAuth();
+  const { values, handleChange } = useForm({
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
 
   useEffect(() => {
-    if (!location.state || !(location.state as any).fromLogin) {
+    const state = location.state as LoginLocationState;
+    if (!state || !state.fromLogin) {
       navigate('/', { replace: true });
     }
   }, [location, navigate]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setErrorMessage('');
+    clearError();
 
-    if (password !== confirmPassword) {
-      setErrorMessage('Password does not match, please confirm again.');
+    if (values.password !== values.confirmPassword) {
       return;
     }
-    if (password.length < MIN_PASSWORD_LENGTH) {
-      setErrorMessage(`The password length must be greater than ${MIN_PASSWORD_LENGTH} characters.`);
+    if (values.password.length < MIN_PASSWORD_LENGTH) {
       return;
     }
 
     try {
-      await register(email, password, confirmPassword);
-      navigate('/home');
+      await register(values.email, values.password, values.confirmPassword);
     } catch (error) {
-      setErrorMessage((error as Error).message);
     }
-
-    // navigate('/home');
   };
 
   const handleBackToLogin = () => {
     navigate('/');
   };
+
+  const getValidationError = (): string => {
+    if (values.password && values.confirmPassword && values.password !== values.confirmPassword) {
+      return 'Password does not match, please confirm again.';
+    }
+    if (values.password && values.password.length < MIN_PASSWORD_LENGTH) {
+      return `The password length must be greater than ${MIN_PASSWORD_LENGTH} characters.`;
+    }
+    return '';
+  };
+
+  const validationError = getValidationError();
+  const displayError = validationError || error;
 
   return (
     <div className="signup-container">
@@ -55,61 +67,46 @@ function Signup() {
               <h2 className="signup-title mb-4">Sign Up</h2>
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                  <div className="input-group">
-                    <span className="input-group-text bg-white">
-                      <i className="bi bi-envelope"></i>
-                    </span>
-                    <input
-                      type="email"
-                      className="form-control"
-                      placeholder="Enter Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
+                  <FormInput
+                    type="email"
+                    placeholder="Enter Email"
+                    value={values.email}
+                    onChange={handleChange('email')}
+                    icon="bi bi-envelope"
+                    required
+                  />
                 </div>
 
                 <div className="mb-3">
-                  <div className="input-group">
-                    <span className="input-group-text bg-white">
-                      <i className="bi bi-lock"></i>
-                    </span>
-                    <input
-                      type="password"
-                      className="form-control"
-                      placeholder="Enter Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </div>
+                  <FormInput
+                    type="password"
+                    placeholder="Enter Password"
+                    value={values.password}
+                    onChange={handleChange('password')}
+                    icon="bi bi-lock"
+                    required
+                  />
                 </div>
 
                 <div className="mb-3">
-                  <div className="input-group">
-                    <span className="input-group-text bg-white">
-                      <i className="bi bi-lock-fill"></i>
-                    </span>
-                    <input
-                      type="password"
-                      className="form-control"
-                      placeholder="Confirm Password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required
-                    />
-                  </div>
+                  <FormInput
+                    type="password"
+                    placeholder="Confirm Password"
+                    value={values.confirmPassword}
+                    onChange={handleChange('confirmPassword')}
+                    icon="bi bi-lock-fill"
+                    required
+                  />
                 </div>
 
-                {errorMessage && (
+                {displayError && (
                   <div className="alert alert-danger" role="alert">
-                    {errorMessage}
+                    {displayError}
                   </div>
                 )}
 
-                <button type="submit" className="btn btn-signup w-auto px-4 mb-4">
-                  Sign Up
+                <button type="submit" className="btn btn-signup w-auto px-4 mb-4" disabled={loading || !!validationError}>
+                  {loading ? 'Signing up...' : 'Sign Up'}
                 </button>
 
                 <p className="back-to-login-text">
